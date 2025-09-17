@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/auth/landing_page.dart';
+import 'auth/landing_page.dart';
 
 void main() {
   runApp(CineLogApp());
