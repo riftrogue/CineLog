@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'auth/landing_page.dart';
+import 'core/app_scaffold.dart';
 
 void main() {
   runApp(CineLogApp());
@@ -19,7 +19,7 @@ class CineLogApp extends StatelessWidget {
           fontFamily: 'Poppins',
         ),
       ),
-      home: LandingPage(),
+      home: AppScaffold(),
     );
   }
 }

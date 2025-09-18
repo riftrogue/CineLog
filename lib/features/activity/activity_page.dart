@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ExplorePage extends StatelessWidget {
-  const ExplorePage({Key? key}) : super(key: key);
+class ActivityPage extends StatelessWidget {
+  const ActivityPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -9,10 +9,10 @@ class ExplorePage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.explore, size: 48, color: Colors.tealAccent),
+          Icon(Icons.local_activity, size: 48, color: Colors.tealAccent),
           SizedBox(height: 16),
           Text(
-            'Explore Page',
+            'Activity Page',
             style: TextStyle(fontSize: 24),
           ),
         ],
