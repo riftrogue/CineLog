@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinelog/models/movie.dart';
 import 'package:cinelog/services/api_service.dart';
 import 'package:cinelog/features/explore/popular_week_page.dart';
+import 'package:cinelog/features/explore/popular_week_page.dart' show MovieDetailPage;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -117,23 +118,30 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          // Responsive sliver grid
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            sliver: SliverLayoutBuilder(
+          // Single-row horizontally scrollable posters using the same tile sizing as the grid
+          SliverToBoxAdapter(
+            child: LayoutBuilder(
               builder: (context, constraints) {
-                final width = constraints.crossAxisExtent; // available width inside sliver
-                final crossAxisCount = width < 600 ? 3 : (width < 900 ? 4 : 6);
-                return SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) => _PosterTile(movie: _trending[index]),
-                    childCount: _trending.length,
-                  ),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    childAspectRatio: 2 / 3,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+                final maxW = constraints.maxWidth;
+                final columns = maxW < 600 ? 3 : (maxW < 900 ? 4 : 6);
+                const spacing = 12.0;
+                const outerPad = 24.0; // 12 left + 12 right
+                final tileWidth = (maxW - outerPad - spacing * (columns - 1)) / columns;
+                final tileHeight = tileWidth * 1.5; // aspect 2/3
+                return SizedBox(
+                  height: tileHeight + 8, // a bit of breathing room
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    itemBuilder: (context, index) {
+                      final m = _trending[index];
+                      return SizedBox(
+                        width: tileWidth,
+                        child: _PosterTile(movie: m),
+                      );
+                    },
+                    separatorBuilder: (context, _) => const SizedBox(width: spacing),
+                    itemCount: _trending.length,
                   ),
                 );
               },
@@ -168,7 +176,11 @@ class _PosterTileState extends State<_PosterTile> {
         onTapCancel: () => setState(() => _pressed = false),
         onTapUp: (_) => setState(() => _pressed = false),
         onTap: () {
-          // TODO: navigate to movie detail
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => MovieDetailPage(movie: widget.movie),
+            ),
+          );
         },
         child: AnimatedScale(
           scale: scale,
