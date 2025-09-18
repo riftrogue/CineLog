@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinelog/models/movie.dart';
 import 'package:cinelog/services/api_service.dart';
-import 'package:cinelog/features/explore/popular_week_placeholder.dart';
+import 'package:cinelog/features/explore/popular_week_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => const PopularWeekPlaceholderPage(),
+                      builder: (_) => const PopularWeekPage(),
                     ),
                   );
                 },
@@ -191,15 +191,46 @@ class _PosterTileState extends State<_PosterTile> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: widget.movie.posterPath != null
-                  ? CachedNetworkImage(
-                      imageUrl: '${ApiService.imageBaseUrl}${widget.movie.posterPath}',
-                      fit: BoxFit.cover,
-                      fadeInDuration: const Duration(milliseconds: 200),
-                      placeholder: (context, url) => _ShimmerPlaceholder(),
-                      errorWidget: (context, url, error) => const _ErrorPoster(),
-                    )
-                  : const _ErrorPoster(),
+              child: Hero(
+                tag: 'poster-${widget.movie.id}',
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    widget.movie.posterPath != null
+                        ? CachedNetworkImage(
+                            imageUrl: '${ApiService.imageBaseUrl}${widget.movie.posterPath}',
+                            fit: BoxFit.cover,
+                            fadeInDuration: const Duration(milliseconds: 200),
+                            placeholder: (context, url) => _ShimmerPlaceholder(),
+                            errorWidget: (context, url, error) => const _ErrorPoster(),
+                          )
+                        : const _ErrorPoster(),
+                    // Long-press overlay area for title/rating tooltip (desktop friendly)
+                    Positioned(
+                      left: 6,
+                      right: 6,
+                      bottom: 6,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Tooltip(
+                              message: widget.movie.title,
+                              waitDuration: const Duration(milliseconds: 500),
+                              child: const SizedBox(height: 1),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Tooltip(
+                            message: 'Rating: ${widget.movie.voteAverage.toStringAsFixed(1)}',
+                            waitDuration: const Duration(milliseconds: 500),
+                            child: const SizedBox(height: 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

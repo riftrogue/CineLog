@@ -12,10 +12,11 @@ class ApiService {
 
 	final http.Client _client;
 
-	/// Fetch trending movies of the week.
-	/// Returns a list of plain maps (id, title, posterPath, releaseDate, voteAverage).
-	Future<List<Map<String, dynamic>>> fetchTrendingMoviesWeek() async {
-		final uri = Uri.parse('$_baseUrl/trending/movie/week?api_key=$_apiKey&language=en-US');
+		/// Fetch trending movies of the week.
+		/// Returns a list of plain maps (id, title, posterPath, releaseDate, voteAverage).
+		/// Supports pagination via [page] (1-based).
+		Future<List<Map<String, dynamic>>> fetchTrendingMoviesWeek({int page = 1}) async {
+			final uri = Uri.parse('$_baseUrl/trending/movie/week?api_key=$_apiKey&language=en-US&page=$page');
 
 		final res = await _client.get(uri);
 		if (res.statusCode != 200) {
