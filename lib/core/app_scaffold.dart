@@ -63,7 +63,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                 label: 'Explore',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.local_activity),
+                icon: Icon(Icons.local_activity_sharp),
                 label: 'Activity',
               ),
               BottomNavigationBarItem(
