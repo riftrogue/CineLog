@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cinelog/models/movie.dart';
 import 'package:cinelog/services/api_service.dart';
+import 'package:cinelog/shared/pages/movie_detail_page.dart';
 
 class PopularWeekPage extends StatefulWidget {
   const PopularWeekPage({super.key});
@@ -169,75 +170,4 @@ class _LoadingTile extends StatelessWidget {
   }
 }
 
-class MovieDetailPage extends StatelessWidget {
-  const MovieDetailPage({super.key, required this.movie});
-  final Movie movie;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(movie.title)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          AspectRatio(
-            aspectRatio: 2 / 3,
-            child: Hero(
-              tag: 'poster-${movie.id}',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: movie.posterPath != null
-                    ? CachedNetworkImage(
-                        imageUrl: '${ApiService.imageBaseUrl}${movie.posterPath}',
-                        fit: BoxFit.cover,
-                      )
-                    : Container(
-                        color: Colors.grey[800],
-                        child: const Center(
-                          child: Icon(Icons.movie, size: 48, color: Colors.tealAccent),
-                        ),
-                      ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: Tooltip(
-                  message: 'Title',
-                  waitDuration: const Duration(milliseconds: 400),
-                  child: Text(
-                    movie.title,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Tooltip(
-                message: 'Average rating',
-                waitDuration: const Duration(milliseconds: 400),
-                child: Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.amber, size: 20),
-                    const SizedBox(width: 4),
-                    Text(movie.voteAverage.toStringAsFixed(1)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          if (movie.releaseDate.isNotEmpty)
-            Tooltip(
-              message: 'Release year',
-              waitDuration: const Duration(milliseconds: 400),
-              child: Text('Release: ${movie.releaseDate.split('-').first}'),
-            )
-          else
-            const Text('Release: TBA'),
-        ],
-      ),
-    );
-  }
-}

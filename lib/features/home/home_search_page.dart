@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cinelog/models/search_item.dart';
 import 'package:cinelog/models/movie.dart';
 import 'package:cinelog/services/api_service.dart';
-import 'package:cinelog/features/explore/popular_week_page.dart' show MovieDetailPage;
+import 'package:cinelog/shared/pages/movie_detail_page.dart';
 
 class HomeSearchPage extends StatefulWidget {
   const HomeSearchPage({super.key});

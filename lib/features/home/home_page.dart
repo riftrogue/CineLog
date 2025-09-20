@@ -4,6 +4,7 @@ import 'package:cinelog/models/movie.dart';
 import 'package:cinelog/services/api_service.dart';
 import 'package:cinelog/features/explore/popular_week_page.dart';
 import 'package:cinelog/features/home/home_search_page.dart';
+import 'package:cinelog/shared/pages/movie_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
