@@ -53,20 +53,31 @@ class _AppScaffoldState extends State<AppScaffold> {
             unselectedIconTheme: IconThemeData(size: 24),
             showSelectedLabels: false,
             showUnselectedLabels: false,
-            items: const [
-              BottomNavigationBarItem(
+            items: [
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.rate_review),
+                icon: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 1.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    size: 16,
+                  ),
+                ),
                 label: 'Review Log',
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.local_activity_sharp),
                 label: 'Activity',
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.person),
                 label: 'Profile',
               ),

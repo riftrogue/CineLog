@@ -16,6 +16,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   Map<String, dynamic>? _details;
   Map<String, dynamic>? _credits;
   bool _loading = true;
+  bool _isDescriptionExpanded = false;
 
   @override
   void initState() {
@@ -280,16 +281,39 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // Synopsis
+                  // Expandable Synopsis
                   if (_overview.isNotEmpty) ...[
-                    Text(
-                      _overview,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        height: 1.5,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isDescriptionExpanded = !_isDescriptionExpanded;
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.elasticOut,
+                        child: Text(
+                          _overview,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            height: 1.5,
+                          ),
+                          maxLines: _isDescriptionExpanded ? null : 3,
+                          overflow: _isDescriptionExpanded ? null : TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
+                    if (!_isDescriptionExpanded && _overview.length > 150) ...[
+                      const SizedBox(height: 4),
+                      const Text(
+                        '...',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 24),
                   ],
                   // Ratings section
