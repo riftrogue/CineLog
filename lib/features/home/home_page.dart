@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinelog/models/movie.dart';
 import 'package:cinelog/services/api_service.dart';
 import 'package:cinelog/features/explore/popular_week_page.dart';
-import 'package:cinelog/features/explore/popular_week_page.dart' show MovieDetailPage;
+import 'package:cinelog/features/home/home_search_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -85,7 +85,11 @@ class _HomePageState extends State<HomePage> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.search, color: Colors.tealAccent),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const HomeSearchPage()),
+                  );
+                },
               ),
             ],
           ),

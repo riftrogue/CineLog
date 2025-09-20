@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cinelog/features/home/home_page.dart';
-import 'package:cinelog/features/explore/explore_page.dart';
+import 'package:cinelog/features/review_log/review_log_page.dart';
 import 'package:cinelog/features/activity/activity_page.dart';
 import 'package:cinelog/features/profile/profile_page.dart';
 import 'package:cinelog/core/app_constants.dart';
@@ -17,7 +17,7 @@ class _AppScaffoldState extends State<AppScaffold> {
 
   final List<Widget> _pages = [
     const HomePage(),
-    const ExplorePage(),
+    const ReviewLogPage(),
     const ActivityPage(),
     const ProfilePage(),
   ];
@@ -59,8 +59,8 @@ class _AppScaffoldState extends State<AppScaffold> {
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.explore),
-                label: 'Explore',
+                icon: Icon(Icons.rate_review),
+                label: 'Review Log',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.local_activity_sharp),
