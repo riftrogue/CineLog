@@ -70,7 +70,8 @@ class _HomeSearchPageState extends State<HomeSearchPage> {
         title: item.displayTitle,
         posterPath: item.posterPath,
         releaseDate: item.date ?? '',
-        voteAverage: 0,
+        voteAverage: item.voteAverage,
+        mediaType: item.mediaType,
       );
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => MovieDetailPage(movie: m)),

@@ -4,6 +4,7 @@ class SearchItem {
   final String title;
   final String? posterPath;
   final String? date; // release_date or first_air_date
+  final double voteAverage;
 
   SearchItem({
     required this.id,
@@ -11,6 +12,7 @@ class SearchItem {
     required this.title,
     required this.posterPath,
     required this.date,
+    required this.voteAverage,
   });
 
   factory SearchItem.fromMap(Map<String, dynamic> map) {
@@ -29,6 +31,7 @@ class SearchItem {
       title: title,
       posterPath: map['poster_path'] as String?,
       date: (map['release_date'] ?? map['first_air_date'])?.toString(),
+      voteAverage: (map['vote_average'] is num) ? (map['vote_average'] as num).toDouble() : 0.0,
     );
   }
 

@@ -104,6 +104,7 @@ class ApiService {
 				'posterPath': map['poster_path'] as String?,
 				'releaseDate': (map['release_date'] ?? map['first_air_date'] ?? '').toString(),
 				'voteAverage': (map['vote_average'] is num) ? (map['vote_average'] as num).toDouble() : 0.0,
+				'mediaType': (map['media_type'] ?? 'movie').toString(),
 			};
 		}).toList();
 	}
