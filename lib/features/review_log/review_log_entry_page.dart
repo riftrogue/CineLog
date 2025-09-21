@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cinelog/models/search_item.dart';
 import 'package:cinelog/services/api_service.dart';
+import 'package:cinelog/shared/widgets/custom_date_picker.dart';
 
 class ReviewLogEntryPage extends StatefulWidget {
   const ReviewLogEntryPage({super.key, required this.item});
@@ -16,6 +17,8 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
   DateTime? _date = DateTime.now();
   double _rating = 0;
   bool _liked = false;
+  bool _firstTimeWatch = false;
+  bool _noSpoilers = false;
   final _reviewController = TextEditingController();
   final _tagsController = TextEditingController();
 
@@ -28,13 +31,10 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
-    final picked = await showModalBottomSheet<DateTime>(
+    final picked = await CustomDatePicker.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _DatePickerBottomSheet(
-        initialDate: _date ?? now,
-        maxDate: now,
-      ),
+      initialDate: _date ?? now,
+      maxDate: now,
     );
     if (picked != null) setState(() => _date = picked);
   }
@@ -68,12 +68,12 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
         backgroundColor: Colors.black,
         title: const Text('I Watched', style: TextStyle(color: Colors.white, fontSize: 18)),
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: const Icon(Icons.close, color: Colors.grey),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.check, color: Colors.white),
+            icon: const Icon(Icons.check, color: Colors.tealAccent),
             tooltip: 'Save',
             onPressed: _save,
           ),
@@ -117,7 +117,7 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
             ),
           ),
           
-          const Divider(color: Color(0xFF2A2F34), height: 1),
+          Divider(color: Colors.grey.withOpacity(0.3), height: 1),
           
           // Date Section
           Container(
@@ -127,7 +127,7 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
               behavior: HitTestBehavior.opaque,
               child: Row(
                 children: [
-                  const Text('Date', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                  const Text('Date', style: TextStyle(color: Colors.grey, fontSize: 16)),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Container(
@@ -145,7 +145,7 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
                           if (_date != null)
                             GestureDetector(
                               onTap: () => setState(() => _date = null),
-                              child: const Icon(Icons.close, color: Colors.white54, size: 18),
+                              child: const Icon(Icons.close, color: Colors.grey, size: 18),
                             ),
                         ],
                       ),
@@ -156,14 +156,14 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
             ),
           ),
           
-          const Divider(color: Color(0xFF2A2F34), height: 1),
+          Divider(color: Colors.grey.withOpacity(0.3), height: 1),
           
           // Rating and Like Section
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                const Text('Rate', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                const Text('Rate', style: TextStyle(color: Colors.grey, fontSize: 16)),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Row(
@@ -179,12 +179,12 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
                             onPressed: () => setState(() => _liked = !_liked),
                             icon: Icon(
                               _liked ? Icons.favorite : Icons.favorite_border,
-                              color: _liked ? Colors.red : Colors.white54,
+                              color: _liked ? Colors.tealAccent : Colors.grey,
                               size: 28,
                             ),
                             padding: EdgeInsets.zero,
                           ),
-                          const Text('Like', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                          const Text('Like', style: TextStyle(color: Colors.grey, fontSize: 12)),
                         ],
                       ),
                     ],
@@ -194,7 +194,7 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
             ),
           ),
           
-          const Divider(color: Color(0xFF2A2F34), height: 1),
+          Divider(color: Colors.grey.withOpacity(0.3), height: 1),
           
           // Review Section
           Expanded(
@@ -209,22 +209,32 @@ class _ReviewLogEntryPageState extends State<ReviewLogEntryPage> {
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Add review...',
-                  hintStyle: TextStyle(color: Colors.white70, fontSize: 16),
+                  hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
                 ),
               ),
             ),
           ),
           
-          const Divider(color: Color(0xFF2A2F34), height: 1),
+          Divider(color: Colors.grey.withOpacity(0.3), height: 1),
           
           // Bottom Icons Section
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [
-                _PillIcon(label: 'First-time watch', icon: Icons.visibility),
-                _PillIcon(label: 'No spoilers', icon: Icons.security),
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _PillIcon(
+                  label: _firstTimeWatch ? "I've seen this before" : 'First-time watch',
+                  icon: Icons.visibility,
+                  isActive: _firstTimeWatch,
+                  onTap: () => setState(() => _firstTimeWatch = !_firstTimeWatch),
+                ),
+                _PillIcon(
+                  label: _noSpoilers ? 'Contains spoilers' : 'No spoilers',
+                  icon: Icons.security,
+                  isActive: _noSpoilers,
+                  onTap: () => setState(() => _noSpoilers = !_noSpoilers),
+                ),
               ],
             ),
           ),
@@ -265,7 +275,7 @@ class _StarRating extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 2),
             child: Icon(
               isFull ? Icons.star : (isHalf ? Icons.star_half : Icons.star_outline),
-              color: (isFull || isHalf) ? const Color(0xFF5A7A8A) : const Color(0xFF5A7A8A),
+              color: (isFull || isHalf) ? Colors.tealAccent : Colors.grey,
               size: 32,
             ),
           ),
@@ -276,254 +286,84 @@ class _StarRating extends StatelessWidget {
 }
 
 class _PillIcon extends StatelessWidget {
-  const _PillIcon({required this.label, required this.icon});
+  const _PillIcon({
+    required this.label, 
+    required this.icon, 
+    required this.isActive,
+    required this.onTap,
+  });
   final String label;
   final IconData icon;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: const Color(0xFF3A4A5A), width: 1),
-          ),
-          child: Icon(icon, color: const Color(0xFF5A7A8A), size: 24),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label, 
-          style: const TextStyle(color: Color(0xFF5A7A8A), fontSize: 12),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-}
-
-class _DatePickerBottomSheet extends StatefulWidget {
-  const _DatePickerBottomSheet({
-    required this.initialDate,
-    required this.maxDate,
-  });
+  final bool isActive;
+  final VoidCallback onTap;
   
-  final DateTime initialDate;
-  final DateTime maxDate;
-
-  @override
-  State<_DatePickerBottomSheet> createState() => _DatePickerBottomSheetState();
-}
-
-class _DatePickerBottomSheetState extends State<_DatePickerBottomSheet> {
-  late DateTime _selectedDate;
-  late DateTime _currentMonth;
-  late PageController _pageController;
-  late int _currentPageIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedDate = widget.initialDate;
-    _currentMonth = DateTime(_selectedDate.year, _selectedDate.month);
-    
-    // Calculate how many months back from now
-    final now = DateTime.now();
-    _currentPageIndex = (now.year - _currentMonth.year) * 12 + (now.month - _currentMonth.month);
-    _pageController = PageController(initialPage: _currentPageIndex);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  void _onPageChanged(int index) {
-    setState(() {
-      _currentPageIndex = index;
-      final now = DateTime.now();
-      _currentMonth = DateTime(now.year, now.month - index);
-    });
-  }
-
-  void _previousMonth() {
-    if (_currentPageIndex < 120) { // Limit to 10 years back
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  void _nextMonth() {
-    if (_currentPageIndex > 0) {
-      _pageController.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  List<DateTime> _getDaysInMonthForDate(DateTime monthDate) {
-    final firstDay = DateTime(monthDate.year, monthDate.month, 1);
-    final lastDay = DateTime(monthDate.year, monthDate.month + 1, 0);
-    final daysInMonth = <DateTime>[];
-    
-    // Add empty days for the start of the week
-    final startWeekday = firstDay.weekday % 7;
-    for (int i = 0; i < startWeekday; i++) {
-      daysInMonth.add(firstDay.subtract(Duration(days: startWeekday - i)));
-    }
-    
-    // Add all days in the month
-    for (int day = 1; day <= lastDay.day; day++) {
-      daysInMonth.add(DateTime(monthDate.year, monthDate.month, day));
-    }
-    
-    return daysInMonth;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    
-    return Container(
-      height: 450,
-      decoration: const BoxDecoration(
-        color: Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+    return GestureDetector(
+      onTap: onTap,
       child: Column(
         children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          SizedBox(
+            width: 60,
+            height: 60,
+            child: Stack(
               children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isActive ? Colors.tealAccent.withOpacity(0.1) : Colors.transparent,
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(
+                      color: isActive ? Colors.tealAccent : Colors.grey.withOpacity(0.5), 
+                      width: 1
+                    ),
+                  ),
+                  child: Icon(
+                    icon, 
+                    color: isActive ? Colors.tealAccent : Colors.grey, 
+                    size: 24
+                  ),
                 ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: _previousMonth,
-                      icon: Icon(
-                        Icons.chevron_left, 
-                        color: _currentPageIndex < 120 ? Colors.white70 : Colors.white30,
+                if (isActive)
+                  Positioned(
+                    top: 2,
+                    right: 2,
+                    child: Container(
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: Colors.tealAccent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        size: 12,
+                        color: Colors.black,
                       ),
                     ),
-                    Text(
-                      DateFormat('MMMM yyyy').format(_currentMonth),
-                      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
-                    ),
-                    IconButton(
-                      onPressed: _nextMonth,
-                      icon: Icon(
-                        Icons.chevron_right, 
-                        color: _currentPageIndex > 0 ? Colors.white70 : Colors.white30,
-                      ),
-                    ),
-                  ],
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, _selectedDate),
-                  child: const Text('Done', style: TextStyle(color: Colors.tealAccent)),
-                ),
+                  ),
               ],
             ),
           ),
-          
-          // Weekday headers
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day) => 
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      day,
-                      style: const TextStyle(color: Colors.white54, fontSize: 14, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-              ).toList(),
-            ),
-          ),
-          
           const SizedBox(height: 8),
-          
-          // Swipeable Calendar grid
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: _onPageChanged,
-              reverse: true, // Swipe left to go to previous month
-              itemCount: 121, // Current month + 120 months back (10 years)
-              itemBuilder: (context, pageIndex) {
-                final monthDate = DateTime(now.year, now.month - pageIndex);
-                final daysInMonth = _getDaysInMonthForDate(monthDate);
-                
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 7,
-                      childAspectRatio: 1,
-                    ),
-                    itemCount: daysInMonth.length,
-                    itemBuilder: (context, index) {
-                      final date = daysInMonth[index];
-                      final isCurrentMonth = date.month == monthDate.month;
-                      final isSelected = _selectedDate.year == date.year && 
-                                       _selectedDate.month == date.month && 
-                                       _selectedDate.day == date.day;
-                      final isToday = now.year == date.year && 
-                                    now.month == date.month && 
-                                    now.day == date.day;
-                      final isFuture = date.isAfter(now);
-                      
-                      return GestureDetector(
-                        onTap: !isFuture ? () {
-                          setState(() => _selectedDate = date);
-                        } : null,
-                        child: Container(
-                          margin: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: isSelected ? Colors.tealAccent : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                            border: isToday && !isSelected ? Border.all(color: Colors.tealAccent.withOpacity(0.5)) : null,
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${date.day}',
-                              style: TextStyle(
-                                color: isFuture ? Colors.white24 :
-                                       isSelected ? Colors.black :
-                                       isCurrentMonth ? Colors.white : Colors.white38,
-                                fontWeight: isSelected || isToday ? FontWeight.w600 : FontWeight.normal,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
+          SizedBox(
+            height: 32,
+            width: 80,
+            child: Text(
+              label, 
+              style: TextStyle(
+                color: isActive ? Colors.tealAccent : Colors.grey, 
+                fontSize: 12
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          
-          const SizedBox(height: 16),
         ],
       ),
     );
   }
-
-
 }
+
+
