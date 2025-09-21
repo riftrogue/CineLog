@@ -164,7 +164,7 @@ class _SearchHint extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: const [
-          Icon(Icons.rate_review, size: 48, color: Colors.tealAccent),
+          Icon(Icons.search, size: 48, color: Colors.tealAccent),
           SizedBox(height: 12),
           Text('Search to log a review'),
         ],
