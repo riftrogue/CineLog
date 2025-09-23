@@ -25,4 +25,15 @@ class Movie {
       mediaType: (map['mediaType'] ?? 'movie').toString(),
     );
   }
+
+  factory Movie.empty() {
+    return const Movie(
+      id: 0,
+      title: '',
+      posterPath: null,
+      releaseDate: '',
+      voteAverage: 0.0,
+      mediaType: 'movie',
+    );
+  }
 }

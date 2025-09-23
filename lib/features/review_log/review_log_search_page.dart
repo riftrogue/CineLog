@@ -1,26 +1,25 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:cinelog/config/app_routes.dart';
-import 'package:cinelog/features/home/home_search_controller.dart';
+import 'package:cinelog/features/review_log/review_log_search_controller.dart';
 import 'package:cinelog/models/search_item.dart';
-import 'package:cinelog/models/movie.dart';
 import 'package:cinelog/shared/widgets/search_input_widget.dart';
 import 'package:cinelog/shared/widgets/search_results_list.dart';
 
-class HomeSearchPage extends StatefulWidget {
-  const HomeSearchPage({super.key});
+class ReviewLogSearchPage extends StatefulWidget {
+  const ReviewLogSearchPage({super.key});
 
   @override
-  State<HomeSearchPage> createState() => _HomeSearchPageState();
+  State<ReviewLogSearchPage> createState() => _ReviewLogSearchPageState();
 }
 
-class _HomeSearchPageState extends State<HomeSearchPage> {
-  late final HomeSearchController _controller;
+class _ReviewLogSearchPageState extends State<ReviewLogSearchPage> {
+  late final ReviewLogSearchController _controller;
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _controller = HomeSearchController();
+    _controller = ReviewLogSearchController();
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -46,19 +45,10 @@ class _HomeSearchPageState extends State<HomeSearchPage> {
   }
 
   void _onResultTap(SearchItem item) {
-    final movie = Movie(
-      id: item.id,
-      title: item.title,
-      posterPath: item.posterPath,
-      releaseDate: item.date ?? '',
-      voteAverage: item.voteAverage,
-      mediaType: item.mediaType,
-    );
-
     Navigator.pushNamed(
       context,
-      AppRoutes.movieDetail,
-      arguments: movie,
+      AppRoutes.reviewLogEntry,
+      arguments: item,
     );
   }
 
@@ -67,7 +57,7 @@ class _HomeSearchPageState extends State<HomeSearchPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Search'),
+        title: const Text('Search to Review'),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -78,7 +68,7 @@ class _HomeSearchPageState extends State<HomeSearchPage> {
             controller: _searchController,
             onChanged: (_) {},
             onSubmitted: _onSearchSubmitted,
-            hintText: 'Search movies, TV shows...',
+            hintText: 'Search movies, TV shows, people...',
           ),
           Expanded(
             child: AnimatedBuilder(
@@ -114,7 +104,7 @@ class _SearchHint extends StatelessWidget {
           Icon(Icons.search, size: 48, color: Colors.tealAccent),
           SizedBox(height: 16),
           Text(
-            'Discover movies and TV shows',
+            'Search to log a review',
             style: TextStyle(
               fontSize: 18,
               color: Colors.white,
@@ -123,7 +113,7 @@ class _SearchHint extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            'Search to explore our collection',
+            'Find movies, shows, or people to review',
             style: TextStyle(
               fontSize: 14,
               color: Colors.white70,

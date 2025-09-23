@@ -1,20 +1,73 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cinelog/models/movie.dart';
+import 'package:cinelog/shared/widgets/poster_tile_widget.dart';
+import 'package:cinelog/config/app_constants.dart';
 import 'package:cinelog/services/api_service.dart';
-import 'package:cinelog/shared/pages/movie_detail_page.dart';
 
-class PopularWeekPage extends StatefulWidget {
-  const PopularWeekPage({super.key});
+/// Popular movies section for the home page
+class PopularSection extends StatelessWidget {
+  const PopularSection({
+    super.key,
+    required this.movies,
+    this.onMovieTap,
+    this.onSeeAllTap,
+  });
+
+  final List<Movie> movies;
+  final Function(Movie)? onMovieTap;
+  final VoidCallback? onSeeAllTap;
 
   @override
-  State<PopularWeekPage> createState() => _PopularWeekPageState();
+  Widget build(BuildContext context) {
+    if (movies.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return SliverToBoxAdapter(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxW = constraints.maxWidth;
+          final columns = maxW < 600 ? 3 : (maxW < 900 ? 4 : 6);
+          const spacing = 12.0;
+          const outerPad = 24.0; // 12 left + 12 right
+          final tileWidth = (maxW - outerPad - spacing * (columns - 1)) / columns;
+          final tileHeight = tileWidth * 1.5; // aspect 2/3
+
+          return SizedBox(
+            height: tileHeight + 8, // a bit of breathing room
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              itemBuilder: (context, index) {
+                final movie = movies[index];
+                return SizedBox(
+                  width: tileWidth,
+                  child: EnhancedPosterTile(
+                    movie: movie,
+                    onTap: onMovieTap != null ? () => onMovieTap!(movie) : null,
+                  ),
+                );
+              },
+              separatorBuilder: (context, _) => const SizedBox(width: spacing),
+              itemCount: movies.length,
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
-class _PopularWeekPageState extends State<PopularWeekPage> {
-  final _api = ApiService();
-  final _scrollController = ScrollController();
+/// Full-screen popular movies page (for see all functionality)
+class PopularMoviesPage extends StatefulWidget {
+  const PopularMoviesPage({super.key});
 
+  @override
+  State<PopularMoviesPage> createState() => _PopularMoviesPageState();
+}
+
+class _PopularMoviesPageState extends State<PopularMoviesPage> {
+  final _scrollController = ScrollController();
   final List<Movie> _items = [];
   int _page = 1;
   bool _loading = false;
@@ -45,14 +98,20 @@ class _PopularWeekPageState extends State<PopularWeekPage> {
   Future<void> _load({bool reset = false}) async {
     if (_loading) return;
     setState(() => _loading = true);
+    
     try {
       if (reset) {
         _page = 1;
         _items.clear();
         _done = false;
       }
-      final data = await _api.fetchTrendingMoviesWeek(page: _page);
+      
+      // TODO: Use proper API service method when available
+      // For now, using trending movies as placeholder
+      final apiService = ApiService();
+      final data = await apiService.fetchTrendingMoviesWeek(page: _page);
       final movies = data.map(Movie.fromMap).toList();
+      
       setState(() {
         _items.addAll(movies);
         _page++;
@@ -68,7 +127,9 @@ class _PopularWeekPageState extends State<PopularWeekPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Popular this week')),
+      appBar: AppBar(
+        title: const Text(AppConstants.popularThisWeek),
+      ),
       body: RefreshIndicator(
         onRefresh: () => _load(reset: true),
         child: CustomScrollView(
@@ -84,9 +145,9 @@ class _PopularWeekPageState extends State<PopularWeekPage> {
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         if (index >= _items.length) {
-                          return const _LoadingTile();
+                          return const LoadingTile();
                         }
-                        return _PosterTileGrid(movie: _items[index]);
+                        return PosterGridTile(movie: _items[index]);
                       },
                       childCount: _items.length + (_done ? 0 : 6),
                     ),
@@ -113,61 +174,4 @@ class _PopularWeekPageState extends State<PopularWeekPage> {
     );
   }
 }
-
-class _PosterTileGrid extends StatelessWidget {
-  const _PosterTileGrid({required this.movie});
-  final Movie movie;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => MovieDetailPage(movie: movie),
-          ),
-        );
-      },
-      child: Hero(
-        tag: 'poster-${movie.id}',
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: const Color(0xFF171B1E),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFF2A2F34), width: 1),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: movie.posterPath != null
-                ? CachedNetworkImage(
-                    imageUrl: '${ApiService.imageBaseUrl}${movie.posterPath}',
-                    fit: BoxFit.cover,
-                  )
-                : Container(
-                    color: Colors.grey[800],
-                    child: const Center(
-                      child: Icon(Icons.movie, size: 40, color: Colors.tealAccent),
-                    ),
-                  ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LoadingTile extends StatelessWidget {
-  const _LoadingTile();
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF171B1E),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFF2A2F34), width: 1),
-      ),
-    );
-  }
-}
-
 

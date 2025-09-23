@@ -38,4 +38,15 @@ class SearchItem {
   String get displayTitle => title.isEmpty ? '(Untitled)' : title;
 
   String? get year => (date != null && date!.isNotEmpty) ? date!.split('-').first : null;
+
+  factory SearchItem.empty() {
+    return SearchItem(
+      id: 0,
+      mediaType: 'movie',
+      title: '',
+      posterPath: null,
+      date: null,
+      voteAverage: 0.0,
+    );
+  }
 }

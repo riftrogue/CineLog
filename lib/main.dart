@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
-import 'core/app_scaffold.dart';
+import 'config/theme.dart';
+import 'config/app_routes.dart';
 
 void main() {
   runApp(CineLogApp());
 }
 
 class CineLogApp extends StatelessWidget {
+  const CineLogApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CineLog',
-      theme: ThemeData.dark().copyWith(
-        primaryColor: Colors.teal,
-        colorScheme: ThemeData.dark().colorScheme.copyWith(
-          secondary: Colors.tealAccent,
-        ),
-        textTheme: ThemeData.dark().textTheme.apply(
-          fontFamily: 'Poppins',
-        ),
-      ),
-      home: AppScaffold(),
+      theme: AppTheme.darkTheme,
+      initialRoute: AppRoutes.home,
+      onGenerateRoute: AppRoutes.generateRoute,
     );
   }
 }

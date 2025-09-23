@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:cinelog/features/home/home_page.dart';
-import 'package:cinelog/features/review_log/review_log_page.dart';
+import 'package:cinelog/features/review_log/review_log_search_page.dart';
 import 'package:cinelog/features/activity/activity_page.dart';
 import 'package:cinelog/features/profile/profile_page.dart';
-import 'package:cinelog/core/app_constants.dart';
+import 'package:cinelog/config/app_constants.dart';
 
 class AppScaffold extends StatefulWidget {
-  const AppScaffold({Key? key}) : super(key: key);
+  const AppScaffold({super.key});
 
   @override
   _AppScaffoldState createState() => _AppScaffoldState();
 }
 
 class _AppScaffoldState extends State<AppScaffold> {
-  int _currentTab = AppTabs.home;
+  int _currentTab = AppConstants.homeTab;
 
   final List<Widget> _pages = [
     const HomePage(),
-    const ReviewLogPage(),
+    const ReviewLogSearchPage(),
     const ActivityPage(),
     const ProfilePage(),
   ];
